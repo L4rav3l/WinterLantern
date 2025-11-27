@@ -19,19 +19,27 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        _sceneManager = new();
-
         base.Initialize();
     }
 
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
+
+        _sceneManager = new();
+
+        _sceneManager.AddScene(new Menu(GraphicsDevice, _sceneManager, Content), "menu");
+        _sceneManager.ChangeScene("menu");
     }
 
     protected override void Update(GameTime gameTime)
     {
         _sceneManager.GetCurrentScene().Update(gameTime);
+
+        if(GameData.Quit == true)
+        {
+            Exit();
+        }
 
         base.Update(gameTime);
     }
@@ -40,7 +48,11 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _sceneManager.GetCurrentScene().Draw(gameTime);
+        _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack, blendState: BlendState.AlphaBlend, samplerState: SamplerState.PointClamp);
+
+        _sceneManager.GetCurrentScene().Draw(_spriteBatch);
+
+        _spriteBatch.End();
 
         base.Draw(gameTime);
     }

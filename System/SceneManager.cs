@@ -4,7 +4,7 @@ namespace WinterLantern;
 
 public class SceneManager
 {
-    public List<IScene> scenes;
+    public Dictionary<string, IScene> scenes;
     public IScene CurrentScene;
 
     public SceneManager()
@@ -14,7 +14,7 @@ public class SceneManager
 
     public void AddScene(IScene scene, string name)
     {
-        scene.LoadScene();
+        scene.LoadContent();
 
         scenes[name] = scene;
     }
