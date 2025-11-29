@@ -57,6 +57,7 @@ public class Menu : IScene
         {
             if(_Selected == 0)
             {
+                _sceneManager.AddScene(new StartGame(_graphics, _sceneManager, _content), "startgame");
                 _sceneManager.ChangeScene("startgame");
             } else {
                 GameData.Quit = true;
