@@ -26,11 +26,18 @@ public class StartGame : IScene
     public void Update(GameTime gameTime)
     {
         _sceneManager.AddScene(new LucasHouse(_graphics, _sceneManager, _content), "LucasHouse");
+        _sceneManager.AddScene(new Outdoor(_graphics, _sceneManager, _content), "outdoor");
         _sceneManager.ChangeScene("LucasHouse");
+
+        GameData.Task = new string[3];
+
+        GameData.Task[0] = "Talk your mum."; 
+        GameData.Task[1] = "Check out the winter lantern at the Christmas market.";
+        GameData.Task[2] = "Go back to the house and talk to your mom.";
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        
+        _graphics.Clear(Color.Black);
     }
 }
