@@ -28,9 +28,10 @@ public class StartGame : IScene
         _sceneManager.AddScene(new LucasHouse(_graphics, _sceneManager, _content), "LucasHouse");
         _sceneManager.AddScene(new Outdoor(_graphics, _sceneManager, _content), "outdoor");
         _sceneManager.AddScene(new Instructor(_graphics, _sceneManager, _content), "instructor");
+        _sceneManager.AddScene(new AbandonedHouse(_graphics, _sceneManager, _content), "AbandonedHouse");
         _sceneManager.ChangeScene("LucasHouse");
 
-        GameData.Task = new string[9];
+        GameData.Task = new string[15];
 
         GameData.Task[0] = "Talk your mum."; 
         GameData.Task[1] = "Check out the winter lantern at the Christmas market.";
@@ -41,6 +42,12 @@ public class StartGame : IScene
         GameData.Task[6] = "Ask about it around the village.";
         GameData.Task[7] = "Explore the village.";
         GameData.Task[8] = "Talk to your mom about the light shard.";
+        GameData.Task[9] = "Go to bed";
+        GameData.Task[10] = "";
+        GameData.Task[11] = "Search the light shard in the abandoned house.";
+        GameData.Task[12] = "Search the last light shard.";
+        GameData.Task[13] = "Go to bed";
+        GameData.Task[14] = "";
     }
 
     public void Draw(SpriteBatch spriteBatch)

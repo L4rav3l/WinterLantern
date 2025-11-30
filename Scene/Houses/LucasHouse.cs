@@ -25,6 +25,7 @@ public class LucasHouse : IScene
     private List<Rectangle> _momTiles;
     private List<Rectangle> _doorTiles;
     private List<Rectangle> _bedTiles;
+    private List<Rectangle> _lightTile;
 
     private string[] _momFirstSentences = new string[3];
     private string[] _momSecondSentences = new string[6];
@@ -82,6 +83,7 @@ public class LucasHouse : IScene
         _momTiles = LoadListObject("Content/lucas-house.tmx", "mom");
         _doorTiles = LoadListObject("Content/lucas-house.tmx", "Door");
         _bedTiles = LoadListObject("Content/lucas-house.tmx", "Bed");
+        _lightTile = LoadListObject("Content/lucas-house.tmx", "LightShard");
 
         _playerTexture = _content.Load<Texture2D>("player");
         _pixelfont = _content.Load<SpriteFont>("pixelfont");
@@ -121,11 +123,10 @@ public class LucasHouse : IScene
         _momThirdSentences[1] = "Mommy:\nDont worry about it. Honey";
 
         //mom fourth sentences
-        _momFourthSentences[0] = "You:\nHi mom, I found a light shard. Do you know anything about it?";
+        _momFourthSentences[0] = "You:\nHi mom, I found a light shard.\nDo you know anything about it?";
         _momFourthSentences[1] = "Mommy:\nWhat did you find? Is this real?";
         _momFourthSentences[2] = "You:\nYes, it is real.";
-        _momFourthSentences[3] = "Mommy:\nRecently, for 30 years it hasn't flared up.\nSomeone collected the shard and\nthe Lantern flared up again.\nYou are chosen.";
-
+        _momFourthSentences[3] = "Mommy:\nRecently, for 30 years it hasn't\nflared up. Someone collected\nthe shard and the Lantern\nflared up again. You are chosen.";
     }
 
     public void Update(GameTime gameTime)
@@ -202,7 +203,7 @@ public class LucasHouse : IScene
             }
         }
 
-        if(GameData.TaskNumber == 3 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+        if((GameData.TaskNumber == 3 || GameData.TaskNumber == 9 || GameData.TaskNumber == 13) && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
         {
             foreach(Rectangle bed in _bedTiles)
             {
@@ -210,6 +211,18 @@ public class LucasHouse : IScene
                 {
                     GameData.TaskNumber++;
                     _sceneManager.ChangeScene("instructor");
+                }
+            }
+        }
+
+        if(GameData.TaskNumber == 12 && GameData.LightShard5 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+        {
+            foreach(Rectangle light in _lightTile)
+            {
+                if(_player.Hitbox.Intersects(light))
+                {
+                    GameData.LightShard5 = false;
+                    GameData.TaskNumber++;
                 }
             }
         }
@@ -229,7 +242,11 @@ public class LucasHouse : IScene
 
         foreach(var layer in _map.Layers)
         {
-            if(layer.Visible)
+            if(layer.Visible && layer.Name != "LightShard")
+            {
+                _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
+                layerDeep += 0.01f;
+            } else if(layer.Name == "LightShard" && GameData.LightShard && GameData.LightShard5)
             {
                 _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
                 layerDeep += 0.01f;

@@ -31,9 +31,14 @@ public class Instructor : IScene
 
         if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
         {
-            GameData.TaskNumber++;
-            GameData.LightShard = true;
-            _sceneManager.ChangeScene("LucasHouse");
+            if(GameData.TaskNumber < 14)
+            {
+                GameData.TaskNumber++;
+                GameData.LightShard = true;
+                _sceneManager.ChangeScene("LucasHouse");
+            } else {
+                _sceneManager.ChangeScene("menu");
+            }
         }
 
         GameData.previous = state;
@@ -51,6 +56,16 @@ public class Instructor : IScene
         if(GameData.TaskNumber == 4)
         {
             instructorText = "Tomorrow you will ask around the village to find out what people know about it.";
+        }
+
+        if(GameData.TaskNumber == 10)
+        {
+            instructorText = "Tomorrow you will explore the abandoned house.";
+        }
+
+        if(GameData.TaskNumber == 14)
+        {
+            instructorText = "You were saved the world from cold because\nyou collected the all winter lantern shard aroud the village.\nCongratulation";
         }
 
         Vector2 InstructorM = _pixelfont.MeasureString(instructorText);

@@ -13,6 +13,9 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin abandoned.tmx
+/copy:abandoned.tmx
+
 #begin lucas-house.tmx
 /copy:lucas-house.tmx
 

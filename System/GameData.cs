@@ -13,4 +13,6 @@ public static class GameData
     public static bool LightShard1 = true;
     public static bool LightShard2 = true;
     public static bool LightShard3 = true;
+    public static bool LightShard4 = true;
+    public static bool LightShard5 = true;
 }

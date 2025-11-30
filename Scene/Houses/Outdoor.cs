@@ -22,6 +22,7 @@ public class Outdoor : IScene
     private List<Rectangle> _lucasTiles;
     private List<Rectangle> _winterTiles;
     private List<Rectangle> _npcTiles;
+    private List<Rectangle> _abandonedHouse;
 
     private List<Rectangle> _lightTile1;
     private List<Rectangle> _lightTile2;
@@ -100,6 +101,7 @@ public class Outdoor : IScene
         _lucasTiles = LoadListObject("Content/outdoor.tmx", "LucasHome");
         _winterTiles = LoadListObject("Content/outdoor.tmx", "WinterLantern");
         _npcTiles = LoadListObject("Content/outdoor.tmx", "NPC_INT");
+        _abandonedHouse = LoadListObject("Content/outdoor.tmx", "AbandonedHouse");
 
         _lightTile1 = LoadListObject("Content/outdoor.tmx", "LightShard1");
         _lightTile2 = LoadListObject("Content/outdoor.tmx", "LightShard2");
@@ -205,6 +207,17 @@ public class Outdoor : IScene
                     {
                         GameData.LightShard3 = false;
                     }
+                }
+            }
+        }
+
+        if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+        {
+            foreach(Rectangle door in _abandonedHouse)
+            {
+                if(_player.Hitbox.Intersects(door))
+                {
+                    _sceneManager.ChangeScene("AbandonedHouse");
                 }
             }
         }
