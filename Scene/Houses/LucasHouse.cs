@@ -29,6 +29,7 @@ public class LucasHouse : IScene
     private string[] _momFirstSentences = new string[3];
     private string[] _momSecondSentences = new string[6];
     private string[] _momThirdSentences = new string[2];
+    private string[] _momFourthSentences = new string[4];
 
     private bool _momSentencecWindow = false;
     private int _sentencesNumber = 0;
@@ -118,6 +119,13 @@ public class LucasHouse : IScene
         //mom third sentences
         _momThirdSentences[0] = "You:\nMom, You know anything about\nWinter Lantern?";
         _momThirdSentences[1] = "Mommy:\nDont worry about it. Honey";
+
+        //mom fourth sentences
+        _momFourthSentences[0] = "You:\nHi mom, I found a light shard. Do you know anything about it?";
+        _momFourthSentences[1] = "Mommy:\nWhat did you find? Is this real?";
+        _momFourthSentences[2] = "You:\nYes, it is real.";
+        _momFourthSentences[3] = "Mommy:\nRecently, for 30 years it hasn't flared up.\nSomeone collected the shard and\nthe Lantern flared up again.\nYou are chosen.";
+
     }
 
     public void Update(GameTime gameTime)
@@ -163,6 +171,18 @@ public class LucasHouse : IScene
                 _sentencesNumber = 0;
                 GameData.TaskNumber++;
             }
+        } else if(GameData.TaskNumber == 8)
+        {
+            if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && _sentencesNumber < 3 && _momSentencecWindow)
+            {
+                _sentencesNumber++;
+            } else if(_sentencesNumber+1 == 4 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+            {
+                _momSentencecWindow = false;
+                GameData.Move = true;
+                _sentencesNumber = 0;
+                GameData.TaskNumber++;
+            }
         }
 
         foreach(Rectangle door in _doorTiles)
@@ -175,7 +195,7 @@ public class LucasHouse : IScene
 
         foreach(Rectangle mom in _momTiles)
         {
-            if(_player.Hitbox.Intersects(mom) && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && (GameData.TaskNumber == 0 || GameData.TaskNumber == 2 || GameData.TaskNumber == 5))
+            if(_player.Hitbox.Intersects(mom) && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && (GameData.TaskNumber == 0 || GameData.TaskNumber == 2 || GameData.TaskNumber == 5 || GameData.TaskNumber == 8))
             {
                 _momSentencecWindow = true;
                 GameData.Move = false;
@@ -233,6 +253,11 @@ public class LucasHouse : IScene
             if(GameData.TaskNumber == 5)
             {
                 spriteBatch.DrawString(_pixelfont, _momThirdSentences[_sentencesNumber], new Vector2(Width / 2 - 280, ((Height / 4) * 3) - 140), Color.White, 0f, Vector2.Zero, 0.75f, SpriteEffects.None, 0.4f);
+            }
+
+            if(GameData.TaskNumber == 8)
+            {
+                spriteBatch.DrawString(_pixelfont, _momFourthSentences[_sentencesNumber], new Vector2(Width / 2 - 280, ((Height / 4) * 3) - 140), Color.White, 0f, Vector2.Zero, 0.75f, SpriteEffects.None, 0.4f);
             }
 
         }

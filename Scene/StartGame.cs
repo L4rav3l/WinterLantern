@@ -30,7 +30,7 @@ public class StartGame : IScene
         _sceneManager.AddScene(new Instructor(_graphics, _sceneManager, _content), "instructor");
         _sceneManager.ChangeScene("LucasHouse");
 
-        GameData.Task = new string[8];
+        GameData.Task = new string[9];
 
         GameData.Task[0] = "Talk your mum."; 
         GameData.Task[1] = "Check out the winter lantern at the Christmas market.";
@@ -40,6 +40,7 @@ public class StartGame : IScene
         GameData.Task[5] = "Ask your mum.";
         GameData.Task[6] = "Ask about it around the village.";
         GameData.Task[7] = "Explore the village.";
+        GameData.Task[8] = "Talk to your mom about the light shard.";
     }
 
     public void Draw(SpriteBatch spriteBatch)

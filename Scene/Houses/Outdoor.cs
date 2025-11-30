@@ -23,6 +23,10 @@ public class Outdoor : IScene
     private List<Rectangle> _winterTiles;
     private List<Rectangle> _npcTiles;
 
+    private List<Rectangle> _lightTile1;
+    private List<Rectangle> _lightTile2;
+    private List<Rectangle> _lightTile3;
+
     private SpriteFont _pixelfont;
 
     private Texture2D _playerTexture;
@@ -97,6 +101,10 @@ public class Outdoor : IScene
         _winterTiles = LoadListObject("Content/outdoor.tmx", "WinterLantern");
         _npcTiles = LoadListObject("Content/outdoor.tmx", "NPC_INT");
 
+        _lightTile1 = LoadListObject("Content/outdoor.tmx", "LightShard1");
+        _lightTile2 = LoadListObject("Content/outdoor.tmx", "LightShard2");
+        _lightTile3 = LoadListObject("Content/outdoor.tmx", "LightShard3");
+
         //first npc sentences
 
         _npcSentences[0] = "You:\nHello, can you help me?";
@@ -165,6 +173,47 @@ public class Outdoor : IScene
             }
         }
 
+        if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+        {
+            foreach(Rectangle tile in _lightTile1)
+            {
+                if(_player.Hitbox.Intersects(tile))
+                {
+                    if(GameData.TaskNumber == 7)
+                    {
+                        GameData.LightShard1 = false;
+                    }
+                }
+            }
+
+            foreach(Rectangle tile in _lightTile2)
+            {
+                if(_player.Hitbox.Intersects(tile))
+                {
+                    if(GameData.TaskNumber == 7)
+                    {
+                        GameData.LightShard2 = false;
+                    }
+                }
+            }
+
+            foreach(Rectangle tile in _lightTile3)
+            {
+                if(_player.Hitbox.Intersects(tile))
+                {
+                    if(GameData.TaskNumber == 7)
+                    {
+                        GameData.LightShard3 = false;
+                    }
+                }
+            }
+        }
+
+        if(GameData.LightShard1 == false && GameData.LightShard2 == false && GameData.LightShard3 == false && GameData.TaskNumber == 7)
+        {
+            GameData.TaskNumber++;
+        }
+
         GameData.previous = state;
     }
 
@@ -179,13 +228,25 @@ public class Outdoor : IScene
 
         foreach(var layer in _map.Layers)
         {
-            if(layer.Visible && layer.Name != "LightShard")
+            if(layer.Visible && layer.Name != "LightShard1" && layer.Name != "LightShard2" && layer.Name != "LightShard3")
             {
                 _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
                 layerDeep += 0.01f;
             }
 
-            if(GameData.LightShard && layer.Name == "LightShard")
+            if(GameData.LightShard && GameData.LightShard1 && layer.Name == "LightShard1")
+            {
+                _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
+                layerDeep += 0.01f;
+            }
+
+            if(GameData.LightShard && GameData.LightShard2 && layer.Name == "LightShard2")
+            {
+                _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
+                layerDeep += 0.01f;
+            }
+
+            if(GameData.LightShard && GameData.LightShard3 && layer.Name == "LightShard3")
             {
                 _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
                 layerDeep += 0.01f;
