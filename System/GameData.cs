@@ -9,4 +9,5 @@ public static class GameData
     public static bool Quit {get;set;}
     public static string[] Task {get;set;}
     public static int TaskNumber = 0;
+    public static bool LightShard = false;
 }

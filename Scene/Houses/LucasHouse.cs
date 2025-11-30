@@ -24,15 +24,17 @@ public class LucasHouse : IScene
     private List<Rectangle> _solidTiles;
     private List<Rectangle> _momTiles;
     private List<Rectangle> _doorTiles;
+    private List<Rectangle> _bedTiles;
 
     private string[] _momFirstSentences = new string[3];
+    private string[] _momSecondSentences = new string[6];
+    private string[] _momThirdSentences = new string[2];
 
     private bool _momSentencecWindow = false;
     private int _sentencesNumber = 0;
 
     private SpriteFont _pixelfont;
     
-    private Texture2D _tileset;
     private Texture2D _playerTexture;
     private Texture2D _momSentencecWindowTexture;
 
@@ -78,6 +80,7 @@ public class LucasHouse : IScene
         _solidTiles = LoadListObject("Content/lucas-house.tmx", "Collision");
         _momTiles = LoadListObject("Content/lucas-house.tmx", "mom");
         _doorTiles = LoadListObject("Content/lucas-house.tmx", "Door");
+        _bedTiles = LoadListObject("Content/lucas-house.tmx", "Bed");
 
         _playerTexture = _content.Load<Texture2D>("player");
         _pixelfont = _content.Load<SpriteFont>("pixelfont");
@@ -102,6 +105,19 @@ public class LucasHouse : IScene
         _momFirstSentences[0] = "Mommy:\nHi sweetie. You woke up very\nlate. Today the winter lantern\nmight flare up. Can you check?\nIt's at the Christmas market.";
         _momFirstSentences[1] = "You:\nNow?";
         _momFirstSentences[2] = "Mommy:\nNo, only this afternoon.\nOf course it's now.";
+
+        //mom second sentences
+
+        _momSecondSentences[0] = "Mommy:\nHello, you are so fast. So,\ndid the winter lantern flare\nup?";
+        _momSecondSentences[1] = "You:\nHi mom, I have bad news.\nThe lantern didn't flare up.";
+        _momSecondSentences[2] = "Mommy:\nWHAT? WHAT IS IT DOING?\nTHIS IS A BIG PROBLEM.";
+        _momSecondSentences[3] = "Mommy:\nGO TO BED NOW.";
+        _momSecondSentences[4] = "You:\nBut mom...";
+        _momSecondSentences[5] = "Mommy:\nGO TO BED NOW.";
+
+        //mom third sentences
+        _momThirdSentences[0] = "You:\nMom, You know anything about\nWinter Lantern?";
+        _momThirdSentences[1] = "Mommy:\nDont worry about it. Honey";
     }
 
     public void Update(GameTime gameTime)
@@ -111,15 +127,42 @@ public class LucasHouse : IScene
         _player.Update(gameTime, _solidTiles, _camera);
         _camera.Follow(_player.Position, new Vector2(_map.Width * 16, _map.Height * 16));
 
-        if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && _sentencesNumber < 2 && _momSentencecWindow)
+        if(GameData.TaskNumber == 0)
         {
-            _sentencesNumber++;
-        } else if(_sentencesNumber+1 == 3 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+            if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && _sentencesNumber < 2 && _momSentencecWindow)
+            {
+                _sentencesNumber++;
+            } else if(_sentencesNumber+1 == 3 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+            {
+                _momSentencecWindow = false;
+                GameData.Move = true;
+                _sentencesNumber = 0;
+                GameData.TaskNumber++;
+            }
+        } else if(GameData.TaskNumber == 2)
         {
-            _momSentencecWindow = false;
-            GameData.Move = true;
-            _sentencesNumber = 0;
-            GameData.TaskNumber++;
+            if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && _sentencesNumber < 5 && _momSentencecWindow)
+            {
+                _sentencesNumber++;
+            } else if(_sentencesNumber+1 == 6 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+            {
+                _momSentencecWindow = false;
+                GameData.Move = true;
+                _sentencesNumber = 0;
+                GameData.TaskNumber++;
+            }
+        } else if(GameData.TaskNumber == 5)
+        {
+            if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && _sentencesNumber < 1 && _momSentencecWindow)
+            {
+                _sentencesNumber++;
+            } else if(_sentencesNumber+1 == 2 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+            {
+                _momSentencecWindow = false;
+                GameData.Move = true;
+                _sentencesNumber = 0;
+                GameData.TaskNumber++;
+            }
         }
 
         foreach(Rectangle door in _doorTiles)
@@ -132,12 +175,25 @@ public class LucasHouse : IScene
 
         foreach(Rectangle mom in _momTiles)
         {
-            if(_player.Hitbox.Intersects(mom) && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && GameData.TaskNumber == 0)
+            if(_player.Hitbox.Intersects(mom) && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && (GameData.TaskNumber == 0 || GameData.TaskNumber == 2 || GameData.TaskNumber == 5))
             {
                 _momSentencecWindow = true;
                 GameData.Move = false;
             }
         }
+
+        if(GameData.TaskNumber == 3 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+        {
+            foreach(Rectangle bed in _bedTiles)
+            {
+                if(_player.Hitbox.Intersects(bed))
+                {
+                    GameData.TaskNumber++;
+                    _sceneManager.ChangeScene("instructor");
+                }
+            }
+        }
+        
 
         GameData.previous = state;
     }
@@ -164,7 +220,6 @@ public class LucasHouse : IScene
         {
             spriteBatch.Draw(_momSentencecWindowTexture, new Vector2(Width / 2 - 300, ((Height / 4) * 3) - 150), null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.3f);
             
-            
             if(GameData.TaskNumber == 0)
             {
                 spriteBatch.DrawString(_pixelfont, _momFirstSentences[_sentencesNumber], new Vector2(Width / 2 - 280, ((Height / 4) * 3) - 140), Color.White, 0f, Vector2.Zero, 0.75f, SpriteEffects.None, 0.4f);
@@ -172,7 +227,12 @@ public class LucasHouse : IScene
 
             if(GameData.TaskNumber == 2)
             {
-                spriteBatch.DrawString(_pixelfont, _momFirstSentences[_sentencesNumber], new Vector2(Width / 2 - 280, ((Height / 4) * 3) - 140), Color.White, 0f, Vector2.Zero, 0.75f, SpriteEffects.None, 0.4f);
+                spriteBatch.DrawString(_pixelfont, _momSecondSentences[_sentencesNumber], new Vector2(Width / 2 - 280, ((Height / 4) * 3) - 140), Color.White, 0f, Vector2.Zero, 0.75f, SpriteEffects.None, 0.4f);
+            }
+
+            if(GameData.TaskNumber == 5)
+            {
+                spriteBatch.DrawString(_pixelfont, _momThirdSentences[_sentencesNumber], new Vector2(Width / 2 - 280, ((Height / 4) * 3) - 140), Color.White, 0f, Vector2.Zero, 0.75f, SpriteEffects.None, 0.4f);
             }
 
         }

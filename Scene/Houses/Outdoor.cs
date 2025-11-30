@@ -21,10 +21,17 @@ public class Outdoor : IScene
     private List<Rectangle> _solidTiles;
     private List<Rectangle> _lucasTiles;
     private List<Rectangle> _winterTiles;
+    private List<Rectangle> _npcTiles;
 
     private SpriteFont _pixelfont;
 
     private Texture2D _playerTexture;
+    private Texture2D _sentencesWindowTexture;
+
+    private string[] _npcSentences = new string[6];
+    private int _sentencesNumber;
+    private bool _sentencesWindow = false;
+
     private Camera2D _camera;
     private Player _player;
 
@@ -74,6 +81,7 @@ public class Outdoor : IScene
         _pixelfont = _content.Load<SpriteFont>("pixelfont");
 
         _playerTexture = _content.Load<Texture2D>("player");
+        _sentencesWindowTexture = _content.Load<Texture2D>("sentenceswindow");
 
         var dict = new Dictionary<int, Texture2D>();
 
@@ -87,6 +95,16 @@ public class Outdoor : IScene
         _solidTiles = LoadListObject("Content/outdoor.tmx", "Collision");
         _lucasTiles = LoadListObject("Content/outdoor.tmx", "LucasHome");
         _winterTiles = LoadListObject("Content/outdoor.tmx", "WinterLantern");
+        _npcTiles = LoadListObject("Content/outdoor.tmx", "NPC_INT");
+
+        //first npc sentences
+
+        _npcSentences[0] = "You:\nHello, can you help me?";
+        _npcSentences[1] = "Shopper:\nYeah, where can I help?";
+        _npcSentences[2] = "You:\nWhat you know about the\nWinterLantern?";
+        _npcSentences[3] = "Shopper:\nThe Winter Lantern controls\nthe temperature. If it doesn't\nflare up, the temperature\ngoes down. The last time this\nhappened was 30 years ago.";
+        _npcSentences[4] = "Shopper:\nThen a man had to collect a lot\nof shards,and the Winter\nLantern flared up again.";
+        _npcSentences[5] = "You:\nThank you for your help.";
     }
 
     public void Update(GameTime gameTime)
@@ -95,6 +113,20 @@ public class Outdoor : IScene
 
         _player.Update(gameTime, _solidTiles, _camera);
         _camera.Follow(_player.Position, new Vector2(_map.Width * 16, _map.Height * 16));
+
+        if(GameData.TaskNumber == 6)
+        {
+            if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E) && _sentencesNumber < 5 && _sentencesWindow)
+            {
+                _sentencesNumber++;
+            } else if(_sentencesNumber+1 == 6 && state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
+            {
+                _sentencesWindow = false;
+                GameData.Move = true;
+                _sentencesNumber = 0;
+                GameData.TaskNumber++;
+            }
+        }
 
         if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
         {
@@ -107,15 +139,27 @@ public class Outdoor : IScene
             }
         }
 
+        foreach(Rectangle tile in _winterTiles)
+        {
+            if(_player.Hitbox.Intersects(tile))
+            {
+                if(GameData.TaskNumber == 1)
+                {
+                    GameData.TaskNumber++;
+                }
+            }
+        }
+
         if(state.IsKeyDown(Keys.E) && !GameData.previous.IsKeyDown(Keys.E))
         {
-            foreach(Rectangle tile in _winterTiles)
+            foreach(Rectangle npc in _npcTiles)
             {
-                if(_player.Hitbox.Intersects(tile))
+                if(_player.Hitbox.Intersects(npc))
                 {
-                    if(GameData.TaskNumber == 1)
+                    if(GameData.TaskNumber == 6)
                     {
-                        GameData.TaskNumber++;
+                        GameData.Move = false;
+                        _sentencesWindow = true;
                     }
                 }
             }
@@ -135,10 +179,26 @@ public class Outdoor : IScene
 
         foreach(var layer in _map.Layers)
         {
-            if(layer.Visible)
+            if(layer.Visible && layer.Name != "LightShard")
             {
                 _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
                 layerDeep += 0.01f;
+            }
+
+            if(GameData.LightShard && layer.Name == "LightShard")
+            {
+                _mapmanager.DrawLayer(layer, spriteBatch, layerDeep, _camera);
+                layerDeep += 0.01f;
+            }
+        }
+
+        if(_sentencesWindow)
+        {
+            spriteBatch.Draw(_sentencesWindowTexture, new Vector2(Width / 2 - 300, ((Height / 4) * 3) - 150), null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.3f);
+
+            if(GameData.TaskNumber == 6)
+            {
+                spriteBatch.DrawString(_pixelfont, _npcSentences[_sentencesNumber], new Vector2(Width / 2 - 280, ((Height / 4) * 3) - 140), Color.White, 0f, Vector2.Zero, 0.75f, SpriteEffects.None, 0.4f);
             }
         }
 
